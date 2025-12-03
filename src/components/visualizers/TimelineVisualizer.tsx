@@ -67,7 +67,7 @@ export function TimelineVisualizer({
 
       <div className="relative mt-1 h-9 rounded-md border border-slate-800 bg-slate-950/80 px-2 py-1">
         {/* Base line */}
-        <div className="absolute left-2 right-2 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700" />
+        <div className="absolute left-2 right-2 top-1/2 h-px -translate-y-1/2 bg-linear-to-r from-slate-700 via-slate-600 to-slate-700" />
 
         {/* Step markers */}
         <div className="relative flex h-full items-center justify-between">

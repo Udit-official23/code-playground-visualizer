@@ -80,10 +80,10 @@ const rightTabs = [
   { id: "performance", label: "Performance" },
   { id: "history", label: "History" },
 ];
-const router = useRouter();
 
 
 export default function PlaygroundPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const algoId = searchParams.get("algo");
   const langParam = searchParams.get("lang") as Language | null;

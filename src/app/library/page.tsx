@@ -7,7 +7,7 @@ import type { Language } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import React from "react";
 
 const categoryLabels: Record<AlgorithmCategory, string> = {
   sorting: "Sorting",
