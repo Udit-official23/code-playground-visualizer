@@ -1,4 +1,5 @@
 // src/hooks/useBenchmark.ts
+"use-client"
 import { useCallback, useEffect, useState } from "react";
 import type { BenchmarkSummary } from "@/lib/performance";
 import type { Language } from "@/lib/types";

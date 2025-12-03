@@ -1,25 +1,25 @@
 // src/app/algorithms/[id]/page.tsx
+
+import React from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs } from "@/components/ui/tabs";
 import { ALGORITHMS } from "@/lib/algorithms";
 import { getAlgorithmCode } from "@/lib/algorithmCode";
 import type { Language } from "@/lib/types";
 
-const languageTabs = [
-  { id: "javascript", label: "JavaScript" },
-  { id: "python", label: "Python" },
-];
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default function AlgorithmDetailPage({ params }: PageProps) {
-  const algo = ALGORITHMS.find((a) => a.id === params.id);
+export default async function AlgorithmDetailPage({ params }: PageProps) {
+  // ✅ unwrap the params Promise
+  const { id } = await params;
+
+  const algo = ALGORITHMS.find((a) => a.id === id);
 
   if (!algo) {
     return notFound();
@@ -32,7 +32,6 @@ export default function AlgorithmDetailPage({ params }: PageProps) {
     getAlgorithmCode(algo.id, "python" as Language) ??
     "# Python template not available yet for this algorithm.";
 
-  // Prefer first language if defined, else JS
   const defaultLang: Language =
     (algo.languages?.[0] as Language | undefined) ?? "javascript";
 
@@ -176,17 +175,19 @@ export default function AlgorithmDetailPage({ params }: PageProps) {
 
         {/* Right: Code Templates */}
         <Card className="border-slate-800 bg-slate-950/70">
-          <CardHeader className="flex items-center justify-between">
-            <CardTitle className="text-xs text-slate-200">
-              Reference Implementation
-            </CardTitle>
-            <Tabs
-              tabs={languageTabs}
-              activeId={defaultLang}
-              // For now we don't change content with tabs; page shows both snippets.
-              onChange={() => {}}
-            />
-          </CardHeader>
+  <CardHeader className="flex items-center justify-between">
+    <CardTitle className="text-xs text-slate-200">
+      Reference Implementation
+    </CardTitle>
+    <div className="flex items-center gap-2 text-[10px]">
+      <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-slate-300">
+        JavaScript
+      </span>
+      <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-slate-300">
+        Python
+      </span>
+    </div>
+  </CardHeader>
           <CardContent className="space-y-4 text-[11px]">
             <div>
               <div className="mb-1 flex items-center justify-between text-[10px] text-slate-400">
@@ -210,9 +211,11 @@ export default function AlgorithmDetailPage({ params }: PageProps) {
 
             <p className="text-[10px] text-slate-500">
               To experiment interactively, use{" "}
-              <span className="font-mono text-emerald-300">Open in Playground</span>{" "}
-              above. There you can see stdout, traces, visualizations, and performance
-              benchmarks (where available).
+              <span className="font-mono text-emerald-300">
+                Open in Playground
+              </span>{" "}
+              above. There you can see stdout, traces, visualizations, and
+              performance benchmarks (where available).
             </p>
           </CardContent>
         </Card>

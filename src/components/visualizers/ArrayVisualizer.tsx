@@ -104,7 +104,7 @@ export function ArrayVisualizer({ steps }: ArrayVisualizerProps) {
               >
                 <div
                   className={clsx(
-                    "flex w-full items-end justify-center rounded-sm bg-gradient-to-t from-slate-800 to-slate-600",
+                    "flex w-full items-end justify-center rounded-sm bg-linear-to-t from-slate-800 to-slate-600",
                     highlighted.has(index) &&
                       "from-emerald-700 to-emerald-400"
                   )}
