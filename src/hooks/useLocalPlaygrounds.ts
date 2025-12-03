@@ -1,6 +1,7 @@
+// src/hooks/useLocalPlaygrounds.ts
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { Language } from "@/lib/types";
 
 export interface SavedPlayground {
@@ -37,11 +38,9 @@ function writeToStorage(items: SavedPlayground[]) {
 }
 
 export function useLocalPlaygrounds() {
-  const [items, setItems] = useState<SavedPlayground[]>([]);
-
-  useEffect(() => {
-    setItems(readFromStorage());
-  }, []);
+  const [items, setItems] = useState<SavedPlayground[]>(() =>
+    readFromStorage()
+  );
 
   const savePlayground = useCallback(
     (payload: {

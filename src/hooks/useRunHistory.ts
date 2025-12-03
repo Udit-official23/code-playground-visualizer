@@ -1,6 +1,7 @@
+// src/hooks/useRunHistory.ts
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { Language, ExecutionResult } from "@/lib/types";
 
 export interface RunHistoryEntry {
@@ -40,11 +41,9 @@ function writeToStorage(items: RunHistoryEntry[]) {
 }
 
 export function useRunHistory(limit: number = 50) {
-  const [entries, setEntries] = useState<RunHistoryEntry[]>([]);
-
-  useEffect(() => {
-    setEntries(readFromStorage());
-  }, []);
+  const [entries, setEntries] = useState<RunHistoryEntry[]>(() =>
+    readFromStorage()
+  );
 
   const addEntry = useCallback(
     (payload: {

@@ -182,7 +182,7 @@ export function GraphVisualizer({
             const isFrontier = frontierSet.has(node.id);
             const isCurrent = node.id === currentId;
 
-            let baseClass =
+            const baseClass =
               "absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border text-[11px] font-semibold transition-transform duration-150 ";
             let colorClass =
               "border-slate-600 bg-slate-800 text-slate-100 shadow";

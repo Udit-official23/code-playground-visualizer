@@ -22,20 +22,6 @@ export interface PlaygroundHotkeyHandlers {
  * Installs global keyboard shortcuts for the playground.
  * It deliberately ignores key events when the user is typing in inputs,
  * textareas, or content-editable regions.
- *
- * Mappings (can be extended later):
- *  - Ctrl+Enter         → run
- *  - Ctrl+S             → save
- *  - Alt+L              → toggle language
- *  - Alt+O              → focus "stdout" tab
- *  - Alt+T              → focus "trace" tab
- *  - Alt+V              → focus "visualizer" tab
- *  - Alt+P              → focus "performance" tab
- *  - Alt+R              → focus "history" tab
- *  - Alt+1              → navigate /playground
- *  - Alt+2              → navigate /library
- *  - Alt+3              → navigate /docs
- *  - Alt+4              → navigate /about (or overview)
  */
 export function usePlaygroundHotkeys(
   handlers: PlaygroundHotkeyHandlers
@@ -140,5 +126,5 @@ export function usePlaygroundHotkeys(
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handlers.onRun, handlers.onSave, handlers.onToggleLanguage, handlers.onFocusTab, handlers.onNavigate, handlers.onToggleSettings]);
+  }, [handlers]);
 }

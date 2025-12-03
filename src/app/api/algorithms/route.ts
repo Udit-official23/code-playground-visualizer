@@ -1,15 +1,20 @@
 // src/app/api/algorithms/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { ALGORITHMS } from "@/lib/algorithms";
+import type { Language } from "@/lib/types";
 
 export const runtime = "nodejs";
 
+type LanguageFilter = Language | "all";
+
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
+
   const search = url.searchParams.get("search")?.toLowerCase().trim() ?? "";
   const category = url.searchParams.get("category") ?? "all";
   const difficulty = url.searchParams.get("difficulty") ?? "all";
-  const language = url.searchParams.get("language") ?? "all";
+  const languageParam = (url.searchParams.get("language") ?? "all") as LanguageFilter;
+
   const limitParam = url.searchParams.get("limit");
   const offsetParam = url.searchParams.get("offset");
 
@@ -31,7 +36,7 @@ export async function GET(req: NextRequest) {
     if (difficulty !== "all" && algo.difficulty !== difficulty) return false;
 
     // language filter
-    if (language !== "all" && !algo.languages.includes(language as any)) {
+    if (languageParam !== "all" && !algo.languages.includes(languageParam)) {
       return false;
     }
 

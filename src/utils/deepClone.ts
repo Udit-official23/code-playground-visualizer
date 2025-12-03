@@ -17,8 +17,6 @@
  * not to perfectly clone every exotic JavaScript feature.
  */
 
-type Primitive = string | number | boolean | bigint | symbol | null | undefined;
-
 /** Narrowing helper to detect plain objects. */
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   if (Object.prototype.toString.call(value) !== "[object Object]") return false;
@@ -33,18 +31,19 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * @param cache Internal WeakMap used to preserve object identity and
  *              handle circular references.
  */
-export function deepClone<T>(value: T, cache = new WeakMap<object, any>()): T {
+export function deepClone<T>(
+  value: T,
+  cache: WeakMap<object, unknown> = new WeakMap()
+): T {
   // Primitives are returned as-is.
-  if (
-    value === null ||
-    typeof value !== "object"
-  ) {
+  if (value === null || typeof value !== "object") {
     return value;
   }
 
   // Cached?
-  if (cache.has(value as object)) {
-    return cache.get(value as object);
+  const cached = cache.get(value as object);
+  if (cached !== undefined) {
+    return cached as T;
   }
 
   // Date
@@ -65,19 +64,19 @@ export function deepClone<T>(value: T, cache = new WeakMap<object, any>()): T {
   if (Array.isArray(value)) {
     const arr: unknown[] = [];
     cache.set(value as object, arr);
-    for (const item of value) {
-      arr.push(deepClone(item as any, cache));
+    for (const item of value as unknown[]) {
+      arr.push(deepClone(item, cache));
     }
     return arr as unknown as T;
   }
 
   // Map
   if (value instanceof Map) {
-    const clonedMap = new Map<any, any>();
+    const clonedMap = new Map<unknown, unknown>();
     cache.set(value as object, clonedMap);
     for (const [k, v] of value.entries()) {
-      const clonedKey = deepClone(k as any, cache);
-      const clonedVal = deepClone(v as any, cache);
+      const clonedKey = deepClone(k, cache);
+      const clonedVal = deepClone(v, cache);
       clonedMap.set(clonedKey, clonedVal);
     }
     return clonedMap as unknown as T;
@@ -85,10 +84,10 @@ export function deepClone<T>(value: T, cache = new WeakMap<object, any>()): T {
 
   // Set
   if (value instanceof Set) {
-    const clonedSet = new Set<any>();
+    const clonedSet = new Set<unknown>();
     cache.set(value as object, clonedSet);
     for (const item of value.values()) {
-      clonedSet.add(deepClone(item as any, cache));
+      clonedSet.add(deepClone(item, cache));
     }
     return clonedSet as unknown as T;
   }
@@ -97,8 +96,10 @@ export function deepClone<T>(value: T, cache = new WeakMap<object, any>()): T {
   if (isPlainObject(value)) {
     const result: Record<string, unknown> = {};
     cache.set(value as object, result);
-    for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
-      result[key] = deepClone(val as any, cache);
+    for (const [key, val] of Object.entries(
+      value as Record<string, unknown>
+    )) {
+      result[key] = deepClone(val, cache);
     }
     return result as unknown as T;
   }
@@ -109,13 +110,20 @@ export function deepClone<T>(value: T, cache = new WeakMap<object, any>()): T {
   const cloneObj = Object.create(proto);
   cache.set(value as object, cloneObj);
 
-  for (const key of Reflect.ownKeys(value as object)) {
-    const desc = Object.getOwnPropertyDescriptor(value, key);
+  const original = value as Record<PropertyKey, unknown>;
+  for (const key of Reflect.ownKeys(original)) {
+    const desc = Object.getOwnPropertyDescriptor(original, key);
     if (!desc) continue;
+
     if ("value" in desc) {
-      desc.value = deepClone(desc.value as any, cache);
+      const newDesc: PropertyDescriptor = {
+        ...desc,
+        value: deepClone(desc.value as unknown, cache),
+      };
+      Object.defineProperty(cloneObj, key, newDesc);
+    } else {
+      Object.defineProperty(cloneObj, key, desc);
     }
-    Object.defineProperty(cloneObj, key, desc);
   }
 
   return cloneObj as T;
@@ -132,7 +140,7 @@ export function deepCloneArray<T>(items: T[]): T[] {
  * Shallow comparison utility often used together with deepClone
  * in tests and examples.
  */
-export function shallowEqual<T extends Record<string, any>>(
+export function shallowEqual<T extends Record<string, unknown>>(
   a: T | null | undefined,
   b: T | null | undefined
 ): boolean {
