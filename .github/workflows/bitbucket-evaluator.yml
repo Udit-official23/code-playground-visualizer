@@ -1,0 +1,47 @@
+name: Bitbucket Repo Evaluator
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_identifier:
+        description: 'Bitbucket repo in format workspace/repo-name'
+        required: true
+        type: string
+      max_prs:
+        description: 'Maximum number of PRs to analyze'
+        required: false
+        default: '50'
+        type: string
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Bitbucket analyzer
+        run: |
+          python bitbucket_repo_evaluator.py \
+            "${{ github.event.inputs.repo_identifier }}" \
+            --username "${{ secrets.BITBUCKET_USERNAME }}" \
+            --app-password "${{ secrets.BITBUCKET_APP_PASSWORD }}" \
+            --max-prs ${{ github.event.inputs.max_prs }} \
+            --output report.json
+
+      - name: Upload report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bitbucket-analysis-report
+          path: report.json
