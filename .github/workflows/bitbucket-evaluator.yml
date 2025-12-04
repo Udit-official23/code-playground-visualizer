@@ -33,11 +33,11 @@ jobs:
 
       - name: Run GitHub Repo Evaluator
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           python repo_evaluator.py \
             "${{ github.event.inputs.repo_identifier }}" \
-            --github-token "$GH_TOKEN" \
+            --github-token "$GH_PAT" \
             --json \
             --max-prs ${{ github.event.inputs.max_prs }} \
             --output report.json
