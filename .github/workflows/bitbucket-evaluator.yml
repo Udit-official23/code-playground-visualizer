@@ -1,10 +1,10 @@
-name: Bitbucket Repo Evaluator
+name: GitHub Repo Evaluator
 
 on:
   workflow_dispatch:
     inputs:
       repo_identifier:
-        description: 'Bitbucket repo in format workspace/repo-name'
+        description: 'GitHub repo in format owner/repo-name'
         required: true
         type: string
       max_prs:
@@ -31,17 +31,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Bitbucket analyzer
+      - name: Run GitHub Repo Evaluator
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python bitbucket_repo_evaluator.py \
+          python repo_evaluator.py \
             "${{ github.event.inputs.repo_identifier }}" \
-            --username "${{ secrets.BITBUCKET_USERNAME }}" \
-            --app-password "${{ secrets.BITBUCKET_APP_PASSWORD }}" \
+            --github-token "$GH_TOKEN" \
+            --json \
             --max-prs ${{ github.event.inputs.max_prs }} \
             --output report.json
 
       - name: Upload report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bitbucket-analysis-report
+          name: github-analysis-report
           path: report.json
