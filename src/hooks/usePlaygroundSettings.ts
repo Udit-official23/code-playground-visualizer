@@ -1,6 +1,7 @@
+// src/hooks/usePlaygroundSettings.ts
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 const STORAGE_KEY = "cp_playground_settings_v1";
 
@@ -39,13 +40,9 @@ function writeToStorage(settings: PlaygroundSettings) {
 }
 
 export function usePlaygroundSettings() {
-  const [settings, setSettings] = useState<PlaygroundSettings>(
-    DEFAULT_SETTINGS
+  const [settings, setSettings] = useState<PlaygroundSettings>(() =>
+    readFromStorage()
   );
-
-  useEffect(() => {
-    setSettings(readFromStorage());
-  }, []);
 
   const updateSetting = useCallback(
     <K extends SettingsKey>(key: K, value: PlaygroundSettings[K]) => {

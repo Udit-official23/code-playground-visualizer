@@ -10,7 +10,7 @@
 //
 // All types here are compatible with AlgorithmMeta from src/lib/algorithms.ts.
 
-import type { AlgorithmMeta, Language } from "@/lib/algorithms";
+import type { AlgorithmMeta } from "@/lib/algorithms";
 
 /* -------------------------------------------------------------------------- */
 /*  Local Types                                                               */

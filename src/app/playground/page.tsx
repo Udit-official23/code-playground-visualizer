@@ -14,7 +14,6 @@ import { Tabs } from "@/components/ui/tabs";
 import {
   type Language,
   type ExecutionResult,
-  type BenchmarkResult,
 } from "@/lib/types";
 import { getAlgorithmCode } from "@/lib/algorithmCode";
 import {
@@ -80,10 +79,10 @@ const rightTabs = [
   { id: "performance", label: "Performance" },
   { id: "history", label: "History" },
 ];
-const router = useRouter();
 
 
 export default function PlaygroundPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const algoId = searchParams.get("algo");
   const langParam = searchParams.get("lang") as Language | null;
@@ -102,8 +101,6 @@ export default function PlaygroundPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ExecutionResult | null>(null);
   const [activeRightTab, setActiveRightTab] = useState<string>("trace");
-  const [benchmark, setBenchmark] = useState<BenchmarkResult | null>(null);
-  const [benchmarkLoading, setBenchmarkLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   // Apply algo + lang from query params on load / change
@@ -199,40 +196,6 @@ export default function PlaygroundPage() {
     setResult(null);
   };
 
-  const handleRunBenchmark = async () => {
-    if (!algoId) {
-      alert("Benchmarks are currently only available for known algorithms.");
-      return;
-    }
-
-    setBenchmarkLoading(true);
-    setBenchmark(null);
-
-    try {
-      const res = await fetch("/api/benchmark", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          algoId,
-          language,
-        }),
-      });
-
-      if (!res.ok) {
-        console.error("Benchmark failed", await res.text());
-        setBenchmark(null);
-        return;
-      }
-
-      const data = (await res.json()) as BenchmarkResult;
-      setBenchmark(data);
-    } catch (err) {
-      console.error(err);
-      setBenchmark(null);
-    } finally {
-      setBenchmarkLoading(false);
-    }
-  };
 
     const handleDownload = () => {
     const extension = language === "javascript" ? "js" : "py";

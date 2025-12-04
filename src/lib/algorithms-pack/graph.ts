@@ -14,7 +14,7 @@
 // All types and helpers are compatible with the existing AlgorithmMeta model
 // from src/lib/algorithms.ts.
 
-import type { AlgorithmMeta, Language } from "@/lib/algorithms";
+import type { AlgorithmMeta } from "@/lib/algorithms";
 
 /* -------------------------------------------------------------------------- */
 /*  Local Types                                                               */

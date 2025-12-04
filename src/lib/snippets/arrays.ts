@@ -17,7 +17,7 @@
  */
 
 export type NumArr = number[];
-export type AnyArr<T = any> = T[];
+export type AnyArr<T = unknown> = T[];
 
 /* ---------------------------------------------------------
    BASIC HELPERS
@@ -41,25 +41,43 @@ export function uniq<T>(arr: T[]): T[] {
 }
 
 /** Deep equality check for values */
-export function deepEqual(a: any, b: any): boolean {
+export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
+
   if (typeof a !== typeof b) return false;
-  if (a && b && typeof a === "object") {
-    if (Array.isArray(a) !== Array.isArray(b)) return false;
-    const keysA = Object.keys(a);
-    const keysB = Object.keys(b);
-    if (keysA.length !== keysB.length) return false;
-    for (const k of keysA) {
-      if (!deepEqual(a[k], b[k])) return false;
+
+  // Handle arrays
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return false;
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (!deepEqual(a[i], b[i])) return false;
     }
     return true;
   }
+
+  // Handle plain objects
+  if (a && b && typeof a === "object" && typeof b === "object") {
+    const objA = a as Record<string, unknown>;
+    const objB = b as Record<string, unknown>;
+
+    const keysA = Object.keys(objA);
+    const keysB = Object.keys(objB);
+    if (keysA.length !== keysB.length) return false;
+
+    for (const k of keysA) {
+      if (!Object.prototype.hasOwnProperty.call(objB, k)) return false;
+      if (!deepEqual(objA[k], objB[k])) return false;
+    }
+    return true;
+  }
+
   return false;
 }
 
 /** Remove falsy values */
 export function compact<T>(arr: T[]): T[] {
-  return arr.filter(Boolean);
+  return arr.filter(Boolean as unknown as (value: T) => value is T);
 }
 
 /** Chunk array into fixed sizes */
@@ -70,9 +88,9 @@ export function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 /** Flatten deep nested arrays */
-export function flattenDeep(arr: any[]): any[] {
-  const out: any[] = [];
-  const stack = [...arr];
+export function flattenDeep(arr: unknown[]): unknown[] {
+  const out: unknown[] = [];
+  const stack: unknown[] = [...arr];
   while (stack.length) {
     const next = stack.pop();
     if (Array.isArray(next)) stack.push(...next);
@@ -95,9 +113,9 @@ export function zip<T>(a: T[], b: T[]): [T, T][] {
 }
 
 /** Zip N arrays */
-export function zipMany(...arrs: any[][]): any[][] {
+export function zipMany(...arrs: unknown[][]): unknown[][] {
   const min = Math.min(...arrs.map((a) => a.length));
-  const out: any[][] = [];
+  const out: unknown[][] = [];
   for (let i = 0; i < min; i++) {
     out.push(arrs.map((a) => a[i]));
   }
@@ -170,7 +188,7 @@ export function median(arr: NumArr): number {
 export function mode(arr: NumArr): number[] {
   const freq: Record<number, number> = {};
   let max = 0;
-  for (let x of arr) {
+  for (const x of arr) {
     freq[x] = (freq[x] || 0) + 1;
     max = Math.max(max, freq[x]);
   }
@@ -193,14 +211,16 @@ export function stddev(arr: NumArr): number {
 
 export function rotateRight<T>(arr: T[], k: number): T[] {
   const n = arr.length;
-  k %= n;
-  return arr.slice(n - k).concat(arr.slice(0, n - k));
+  if (n === 0) return [];
+  const shift = ((k % n) + n) % n;
+  return arr.slice(n - shift).concat(arr.slice(0, n - shift));
 }
 
 export function rotateLeft<T>(arr: T[], k: number): T[] {
   const n = arr.length;
-  k %= n;
-  return arr.slice(k).concat(arr.slice(0, k));
+  if (n === 0) return [];
+  const shift = ((k % n) + n) % n;
+  return arr.slice(shift).concat(arr.slice(0, shift));
 }
 
 export function reverse<T>(arr: T[]): T[] {
@@ -208,7 +228,10 @@ export function reverse<T>(arr: T[]): T[] {
 }
 
 /** Group by key */
-export function groupBy<T>(arr: T[], fn: (v: T) => string): Record<string, T[]> {
+export function groupBy<T>(
+  arr: T[],
+  fn: (v: T) => string
+): Record<string, T[]> {
   return arr.reduce((acc, cur) => {
     const key = fn(cur);
     (acc[key] ||= []).push(cur);
@@ -217,7 +240,10 @@ export function groupBy<T>(arr: T[], fn: (v: T) => string): Record<string, T[]> 
 }
 
 /** Count occurrences */
-export function countBy<T>(arr: T[], fn: (v: T) => string): Record<string, number> {
+export function countBy<T>(
+  arr: T[],
+  fn: (v: T) => string
+): Record<string, number> {
   const out: Record<string, number> = {};
   for (const v of arr) {
     const key = fn(v);
@@ -256,7 +282,7 @@ export function combinations<T>(arr: T[], k: number): T[][] {
 
 export function powerSet<T>(arr: T[]): T[][] {
   const out: T[][] = [[]];
-  for (let x of arr) {
+  for (const x of arr) {
     const curr = out.map((subset) => [...subset, x]);
     out.push(...curr);
   }
@@ -289,13 +315,13 @@ export function randomIntArray(len: number, min = 0, max = 1000): number[] {
 --------------------------------------------------------- */
 
 export function longestSubarraySumK(arr: NumArr, k: number): number {
-  let sum = 0,
-    left = 0,
-    max = 0;
+  let sum = 0;
+  let left = 0;
+  let max = 0;
 
   for (let right = 0; right < arr.length; right++) {
     sum += arr[right];
-    while (sum > k) sum -= arr[left++];
+    while (sum > k && left <= right) sum -= arr[left++];
     if (sum === k) max = Math.max(max, right - left + 1);
   }
   return max;
@@ -335,7 +361,7 @@ export function movingAverage(arr: NumArr, window: number): number[] {
 export function cumulativeProduct(arr: NumArr): NumArr {
   const out: NumArr = [];
   let p = 1;
-  for (let x of arr) {
+  for (const x of arr) {
     p *= x;
     out.push(p);
   }
@@ -373,9 +399,12 @@ export function mostFrequent<T>(arr: T[]): T | null {
 export type Matrix<T = number> = T[][];
 
 export function transpose<T>(m: Matrix<T>): Matrix<T> {
-  const rows = m.length,
-    cols = m[0].length;
-  const out: Matrix<T> = Array.from({ length: cols }, () => Array(rows));
+  const rows = m.length;
+  if (rows === 0) return [];
+  const cols = m[0].length;
+  const out: Matrix<T> = Array.from({ length: cols }, () =>
+    Array<T>(rows)
+  );
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) out[c][r] = m[r][c];
   }
@@ -383,7 +412,7 @@ export function transpose<T>(m: Matrix<T>): Matrix<T> {
 }
 
 export function rotateMatrix90<T>(m: Matrix<T>): Matrix<T> {
-  return transpose(m).map((row) => row.reverse());
+  return transpose(m).map((row) => row.slice().reverse());
 }
 
 /* ---------------------------------------------------------

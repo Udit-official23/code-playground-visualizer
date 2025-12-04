@@ -1,6 +1,4 @@
-// src/lib/algorithms.ts
-import { gridAlgorithmsPack } from "./algorithms-pack/grid";
-import { treeAlgorithmsPack } from "./algorithms-pack/tree";
+// src/lib/algorithms.ts 
 
 export type AlgorithmCategory =
   | "sorting"
@@ -473,7 +471,7 @@ function quickSort(arr) {
 console.log(
   quickSort([9, 1, 4, 7, 3, 2, 8, 5, 6])
 );`,
-      python: ""
+      python: "",
     },
     relatedIds: ["merge-sort", "heap-sort", "insertion-sort"],
   },
@@ -661,7 +659,7 @@ const graph = {
 };
 
 bfs("A", graph);`,
-      python: ""
+      python: "",
     },
     relatedIds: ["dfs", "dijkstra"],
   },
@@ -714,7 +712,7 @@ const graph = {
 };
 
 dfs("A", graph);`,
-      python: ""
+      python: "",
     },
     relatedIds: ["bfs", "topological-sort"],
   },
@@ -788,7 +786,7 @@ const graph = {
 };
 
 console.log(dijkstra(graph, "A"));`,
-      python: ""
+      python: "",
     },
     relatedIds: ["bfs"],
   },
@@ -869,7 +867,7 @@ const dag = {
 };
 
 console.log(topologicalSort(dag));`,
-      python: ""
+      python: "",
     },
     relatedIds: ["bfs", "dfs"],
   },
@@ -927,7 +925,7 @@ function twoSumHash(nums, target) {
 
 console.log(twoSumBruteForce([2, 7, 11, 15], 9));
 console.log(twoSumHash([2, 7, 11, 15], 9));`,
-      python: ""
+      python: "",
     },
     relatedIds: ["binary-search"],
   },
@@ -969,7 +967,7 @@ console.log(twoSumHash([2, 7, 11, 15], 9));`,
 }
 
 console.log(kadane([-2,1,-3,4,-1,2,1,-5,4]));`,
-      python: ""
+      python: "",
     },
     relatedIds: ["two-sum"],
   },
@@ -1028,7 +1026,7 @@ function fibBottomUp(n) {
 for (let i = 0; i <= 10; i++) {
   console.log(i, fibRecursive(i), fibMemo(i), fibBottomUp(i));
 }`,
-      python: ""
+      python: "",
     },
     relatedIds: ["kadane"],
   },
@@ -1073,7 +1071,7 @@ for (let i = 0; i <= 10; i++) {
 }
 
 console.log(coinChange([1, 2, 5], 11));`,
-      python: ""
+      python: "",
     },
     relatedIds: ["fibonacci-dp"],
   },
@@ -1135,7 +1133,7 @@ const items = [
 ];
 
 console.log(knapsack01(items, 5));`,
-      python: ""
+      python: "",
     },
     relatedIds: ["coin-change"],
   },
@@ -1170,7 +1168,7 @@ console.log(knapsack01(items, 5));`,
 
 for i in range(1, 21):
     print(i, "→", fizz_buzz(i))`,
-      javascript: ""
+      javascript: "",
     },
     relatedIds: ["bubble-sort"],
   },
@@ -1206,7 +1204,7 @@ for i in range(1, 21):
 }
 
 console.log("Result:", main());`,
-      python: ""
+      python: "",
     },
     relatedIds: ["bubble-sort", "linear-search"],
   },
